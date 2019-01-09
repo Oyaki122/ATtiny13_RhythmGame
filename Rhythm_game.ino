@@ -2,11 +2,20 @@
 #define buzzer 2
 #define led 3
 
-short bpmDecide(char notesNum) { return 25 * notesNum + random(-10, 11); }
+short tempoDecide(char notesNum) {
+    return 60 / (2 * 25 * notesNum + random(-10, 11)) * 1000;
+}
 
 void rhythmGenerator(const short* rhythm, const char notesNum) {
     for (char count = 0; count < notesNum; count++) {
         rhythm[count] = random(0, 8);
+    }
+}
+
+void modelShow(const short* rhythm, const char notesNum, const short tempo) {
+    for (char count = 0; count < notesNum; count++) {
+        tone(buzzer, 1000, tempo * rhythm[count] / 2);
+        delay(tempo * rhythm[count]);
     }
 }
 
@@ -25,16 +34,16 @@ void setup() {
 void loop() {
     short rhythm[5];
     short play[5];
-    short bpm;
+    short tempo;
     bool result;
 
     for (char notesNum = 4; i < 9; i++) {
-        bpm = bpmDecide(notesNum);
+        tempo = tempoDecide(notesNum);
         rhythmGenerator(&rhythm, notesNum);
-        modelShow(&rhythm, notesNum, bpm);
+        modelShow(&rhythm, notesNum, tempo);
         tone(buzzer, 500, 500);
         delay(500);
-        playInput(&play, bpm);
+        playInput(&play, tempo);
         result = judge(&rhythm, &play);
         showResult(result);
         delay(1000);
